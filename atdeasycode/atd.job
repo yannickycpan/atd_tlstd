@@ -1,0 +1,13 @@
+#!/bin/bash                                                                     
+#PBS -l nodes=1:ppn=1,walltime=01:00:00
+#PBS -q preempt
+#PBS -m n                                                                       
+#PBS -N atdmcarlstd
+#PBS -e [your directory]/${PBS_JOBID}_${PBS_ARRAYID}.err
+#PBS -o [your directory]/${PBS_JOBID}_${PBS_ARRAYID}.out               
+
+cd [your directory]
+
+# The PBS array id corresponds to the desired setting                           
+# of the block index: 0 - 41                                        
+./comp_algo_domain ${PBS_ARRAYID}
