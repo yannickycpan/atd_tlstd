@@ -3,7 +3,7 @@ Use makefile, simply type 'make'. NOTE that you may need to revise the compiler 
 
 
 *******General Explanations***********
-1. This framework only allows you to deal with episodic data, the dataset mcphidir1024fs20rand2k.zip is the one we used in ATD paper for mountain car experiment. For energy domain experiment, I do not upload the data yet due to its large size, please contact me if you want that. I have another repository to deal with that continuous task.  
+1. The dataset mcphidir1024fs20rand2k.zip is the one we used in ATD paper for mountain car experiment. For energy domain experiment, I do not upload the data yet due to its large size, please contact me if you want that. Two main functions: comp_algo_mcar.c and comp_algo_energy.c are used to run mountain car and energy domain experiments respectively. Modify the makefile to make sure correct main function is compiled.   
 2. This framework only uses tile coded feature (so you can see sparse computation is used), you need to specify number of non zeros. It is easy to revise to non-sparse computation by replacing those _sp functions. 
 3. This framework can be used on HPC facility in a [per parameter setting per node style]. Example of job script is in atd.job script, of course you may use different job schedular so you need to modify it.
 4. Two ways of updating SVD are included: one is to update SVD per sample; another way is to update SVD in a batch manner. 
