@@ -13,9 +13,22 @@ void allocate_mdp_t(struct domain_mdp_t *MDP, const int numfs, const int biasuni
         MDP->PHI = gsl_matrix_calloc(trajectory_len,numfs + biasunit);
 }
 
+void allocate_engy_mdp_t(struct domain_mdp_t *MDP, const int numfs, const int biasunit, const int trajectory_len, const int numallstates){
+    //number of rewards is the length of trajectory
+    MDP->rewards = gsl_vector_alloc(trajectory_len);
+    MDP->Allstates = gsl_matrix_alloc(1,1);
+    MDP->Alltruevalues = gsl_vector_alloc(numallstates);
+}
+
 void deallocate_mdp_t(struct domain_mdp_t *MDP){
         gsl_vector_free(MDP->rewards);
         gsl_matrix_free(MDP->PHI);
+}
+
+void deallocate_engy_mdp_t(struct domain_mdp_t *MDP){
+    gsl_vector_free(MDP->rewards);
+    gsl_matrix_free(MDP->Allstates);
+    gsl_vector_free(MDP->Alltruevalues);
 }
 
 void deallocate_truevalues_t(struct domain_mdp_t *MDP){
@@ -75,5 +88,21 @@ int getDomainMDP(struct domain_mdp_t * MDP, const int numfs, const int biasunit,
     return 0;
 }
 
+int getEngyMDP(struct domain_mdp_t * MDP, const int numfs, const int biasunit, const int trajectory_len, const int numallstates, char * phifilename, char * rewardfilename, char * allstatesfilename, char * alltruevaluesfilename) {
+    
+    allocate_engy_mdp_t(MDP, numfs, biasunit, trajectory_len, numallstates);
+    
+    FILE * rewardfile = fopen(rewardfilename, "r");
+    gsl_vector_fread(rewardfile, MDP->rewards);
+    
+    FILE * alltruevaluesfile = fopen(alltruevaluesfilename, "r");
+    gsl_vector_fread(alltruevaluesfile, MDP->Alltruevalues);
+    
+    fclose(rewardfile);
+    
+    fclose(alltruevaluesfile);
+    
+    return 0;
+}
 
 

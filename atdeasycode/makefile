@@ -1,10 +1,6 @@
-ifeq ($(USER),yangpan)
-	INCLUDE = -I/opt/local/include
-	LIBS = -L/N/soft/cle4/gsl/1.15/lib -lgsl -lgslcblas -lm
-else
-	INCLUDE = -I/usr/local/include
-	LIBS = -L/usr/local/lib -lgsl -lgslcblas -lm
-endif
+INCLUDE = -I/usr/local/include
+LIBS = -L/usr/local/lib -lgsl -lgslcblas -lm
+
 OPTS = -Wall -pedantic -std=c99
 
 all: 
@@ -27,4 +23,4 @@ algorithms.o: utils.o domain_mdp.o
 	cc $(OPTS) $(INCLUDE) -c algorithms.c
 
 comp_algo_domain: utils.o domain_mdp.o algorithms.o
-	cc $(OPTS) $(INCLUDE) -o comp_algo_domain comp_algo_domain.c algorithms.o utils.o domain_mdp.o $(LIBS)
+	cc $(OPTS) $(INCLUDE) -o comp_algo_energy comp_algo_energy.c algorithms.o utils.o domain_mdp.o $(LIBS)
