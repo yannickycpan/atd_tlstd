@@ -29,18 +29,21 @@ char* concat(char *s1, char *s2)
 int main(int argc, char * argv[])
 {
       /* General experiment settings */
-      const int numMDP = 1; /* number of random MDPs to run, length of krange */
-      //const int N = 1; /* number of states in MDP */
-      const int NS = 40; /* number of episodes */
+      const int numMDP = 1; /* NOT used, keep it as 1 */
+      const int NS = 40; /* number of episodes, 40 is enough for 5000 totalsteps as defined below */
       const int numRuns = 30; /* number of repeats */
-      const int biasunit = 0;
+      const int biasunit = 0; /* whether attach a unit column */
+      //number of states which have their true values used to do evaluation
       const int numallstates = 2000;
       char * trainfileprefix = "mcphidir1024fs20rand2k/";
+      // number of random features which will be attached to your original representation
       const int num_rand_fs = 0;
-      const int num_feature = 1024 + num_rand_fs; 
+      const int num_feature = 1024 + num_rand_fs;
+      // among those random features, number of 1s. The rest will be 0.
       const int num_rand_nz = 0;
       const int num_nz = 10 + num_rand_nz;
       const int totalsteps = 5000;
+      //compute evaluation error every numerrorsample steps
       const int numerrorsample = 50;
       const int totalerrsteps = floor(totalsteps / ((double)numerrorsample));
 

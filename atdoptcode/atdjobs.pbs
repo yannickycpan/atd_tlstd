@@ -1,0 +1,12 @@
+#!/bin/bash                                                                     
+#PBS -l nodes=1:ppn=1,walltime=00:10:00  
+#PBS -q preempt
+#PBS -N atdmllab
+#PBS -e [your dir]/${PBS_JOBNAME}.${PBS_JOBID}.err       
+#PBS -o [your dir]/${PBS_JOBNAME}.${PBS_JOBID}.out              
+
+cd [your dir] 
+
+# The PBS array id corresponds to the desired setting                           
+# of the block index: 0 - 41                                        
+./compare_algorithms 30 5000 2 ${PBS_ARRAYID}
