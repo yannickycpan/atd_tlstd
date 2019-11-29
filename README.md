@@ -1,8 +1,6 @@
 # atd_tlstd
 This repository includes the code and data used in tLSTD (IJCAI, 2016) and ATD papers (AAAI, 2017). 
 
-Please contact me at yangpan@iu.edu if you have comments, suggestions, or find bugs. 
-
 ## Short Introduction
 The atdeasycode is easy to understand but is not optimized in many aspects (i.e. frequently allocate and free memeory for gsl variables). This code is written in a straightforward way. For example, in comp_algo_domain.c file, there is no complex structure: we define necessary variables used to read data, set up parameters to sweep, initialize variables for each algorithm, and then use for loop to sweep over all possible parameter combinations. The ATD and tLSTD algorithms in algorithms.c file are written in a manner which almost exactly follow the pseudocode in our paper. It is easy to adapt any single algorithm's implementation to your own repository. 
 
