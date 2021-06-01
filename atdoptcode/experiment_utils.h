@@ -63,6 +63,8 @@ const static struct{
             { "TO-ETD", init_linear_alg, deallocate_linear_alg},
             { "TLSTD", init_matrix_alg, deallocate_matrix_alg},
             { "ATD2nd", init_matrix_alg, deallocate_matrix_alg},
+            { "ATD2nd-FullA", init_matrix_alg, deallocate_matrix_alg},
+            { "ATD2nd-TrueA", init_matrix_alg, deallocate_matrix_alg},
             { "LSTD", init_matrix_alg, deallocate_matrix_alg},
             { "TEST", init_sketch_alg, deallocate_sketch_alg},
             { "RPLSTD", init_sketch_alg, deallocate_sketch_alg},

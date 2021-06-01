@@ -13,8 +13,8 @@
 // TODO: put in proper default file names here
 // NOTE: numobservations is actually number of features
 const struct trajectory_mdp_opts_t default_trajectory_mdp_opts =
-{.numobservations = 1000, .trajectory_length = 1000, .num_true_states = 500,
-            .true_observations_filename = "mcphidir/evlstates"};
+{.numobservations = 2000, .trajectory_length = 2000, .num_true_states = 2000,
+            .true_observations_filename = "mcarphi1k/evlvalues2000"};
 
 /***** Private functions used below, in alphabetical order *****/
 

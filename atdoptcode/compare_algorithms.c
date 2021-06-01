@@ -32,10 +32,10 @@ int main(int argc, char * argv[]) {
       int i, j; // generic iterators
 
       /* Algorithms parameter sets */
-      const int numalpha = 13;
-      double alphas_range[13];
+      const int numalpha = 15;
+      double alphas_range[15];
       for(i = 0; i < numalpha; i++)
-          alphas_range[i] = 0.1*pow(2,i-7);
+          alphas_range[i] = 0.1*pow(2,i-10);
       
       int numxi = 13;
       double xis_range[13];
@@ -44,15 +44,17 @@ int main(int argc, char * argv[]) {
       }
 
       //printf("alpha 0 is %lf\n", alphas_range[0]);
-      const int numeta = 13;
-      double etas_range[13];
-      double etastep = 0;
+      const int numeta = 15;
+      double etas_range[15];
+      double etastep = -2;
       for(i = 0; i < numeta; i++){
-        etas_range[i] = pow(10, -5 + etastep);
+        etas_range[i] = pow(10, etastep);
         etastep+=0.75;
       }
 
-      double lambdas_range[] =  {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.93, 0.95,0.97,0.99,1.0};
+      //double lambdas_range[] =  {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.93, 0.95,0.97,0.99,1.0};
+      double lambdas_range[] =  {0.0, 0.1, 0.2, 0.8, 0.9, 0.99, 1.0};
+      // double lambdas_range[] = {0.0};
       const int numlambda = sizeof(lambdas_range)/sizeof(double);
 
       // Initialize params array
@@ -72,10 +74,12 @@ int main(int argc, char * argv[]) {
                   if(count == pick_ind || cluster_indicator == 0){
                   alg_params[pp].alpha_t = alphas_range[i];
                   alg_params[pp].lambda_t = lambdas_range[j];
-                  alg_params[pp].beta_t = factor;
+                  // alg_params[pp].beta_t = factor;
+		  alg_params[pp].beta_t = alphas_range[i]*0.1;
                   alg_params[pp].lambda_tp1 = lambdas_range[j];
                   alg_params[pp].eta_t = etas_range[i];
-                  alg_params[pp].threshold = 0.01; 
+                  // alg_params[pp].eta_t = 10.0;
+		  alg_params[pp].threshold = 0.01; 
                   pp++;
                   }
                   count++;
@@ -94,14 +98,14 @@ int main(int argc, char * argv[]) {
       input_info.num_nonzeros = num_nz;
       //use SPARSE will use sparse computation, nonzero is 1 by default
       //NOTE: current sparse only means it allocate and read in nonzero indexes
-      input_info.sparse = NONSPARSE;
-      input_info.trainfileprefix = "mcarphi1k/mcartrainphi1k";
-      input_info.testfile = "mcarphi1k/mcartestphi1k";
+      input_info.sparse = SPARSE;
+      input_info.trainfileprefix = "mcarphi1k/mcartrainphi";
+      input_info.testfile = "mcarphi1k/mcartestphi";
       create_mdp(&mdp, atoi(argv[3]), &input_info);
 
 
       /* Algorithms */
-      const char *alg_names[] = {"TD","TO-TD","TO-ETD","ETD","ATD2nd","LSTD"};
+      const char *alg_names[] = {"TD", "ATD2nd-TrueA", "ATD2nd", "LSTD"};
       const int num_algs = sizeof(alg_names)/sizeof(char *);
 
       /* Run algorithms on given mdps */

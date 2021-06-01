@@ -30,6 +30,7 @@ struct matrix_alg_vars_t {
     
       // For true A and C
       gsl_matrix *matA;
+      gsl_matrix *trueA;
       gsl_matrix *matC;
 
       // For algorithms that use an approximation to A
@@ -61,5 +62,6 @@ int ATD_2ndorder(void * alg_vars, const struct alg_params_t * params, const stru
 
 int ATD_2ndorder_trueA(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info);
 
+int ATD_2ndorder_fullA(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info);
 
 #endif

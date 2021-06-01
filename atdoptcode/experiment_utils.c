@@ -78,15 +78,20 @@ int run_exp(struct result_vars_t * rvars, struct mdp_t * mdp, const char *alg_na
                   // Reset algorithms for new run
                   for (aa = 0; aa < rvars->num_algs; aa++) {
                         reset_alg(algs[aa]);
-                  }
+                        if (strcmp(algs[aa]->name, "ATD2nd-TrueA") == 0){
+			   struct matrix_alg_vars_t * vars = (struct matrix_alg_vars_t *) algs[aa]->alg_vars;
+			   get_mdp_Amat(mdp, algs[aa]->params.lambda_t, vars->trueA); 
+			   }
+		  }
                   reset_mdp_and_transition_info(&tinfo, mdp);
                   
                   int err_count = 0;
                   indices[STEP_IND] = err_count;
                   for (aa = 0; aa < rvars->num_algs; aa++)  {
                       indices[ALG_IND] = aa;
-                      err = get_rmse(algs[aa], mdp, work);
-                      //printf("the current err is %f\n", err);
+                      // err = get_rmse(algs[aa], mdp, work);
+                      err = get_pame(algs[aa], mdp, work);
+		      //printf("the current err is %f\n", err);
                       index = flatten_index(indices, rvars->array_sizes, NUM_COMBOS_RESULTS);
                       rvars->mean_mse[index] += err;
                       rvars->var_mse[index] += err*err;
@@ -112,8 +117,9 @@ int run_exp(struct result_vars_t * rvars, struct mdp_t * mdp, const char *alg_na
                         if(nn % rvars->steps_per_err == 0){
                             for (aa = 0; aa < rvars->num_algs; aa++)  {
                                  indices[ALG_IND] = aa;
-                                 err = get_rmse(algs[aa], mdp, work);
-                                 if(nn % 100 == 0)printf("algo %s the current err is %f\n", algs[aa]->name, err);
+                                 // err = get_rmse(algs[aa], mdp, work);
+                                 err = get_pame(algs[aa], mdp, work);
+				 if(nn % 100 == 0)printf("algo %s the current err is %f\n", algs[aa]->name, err);
                                  //if(nn % 100 == 0)printf("alg %s runtime is %f\n", algs[aa]->name, time_temp[aa]);
                                  index = flatten_index(indices, rvars->array_sizes, NUM_COMBOS_RESULTS);
                                  rvars->mean_mse[index] += err;
