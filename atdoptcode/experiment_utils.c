@@ -71,7 +71,7 @@ int run_exp(struct result_vars_t * rvars, struct mdp_t * mdp, const char *alg_na
             }
            if(mdp->trajectory_mdp != NULL)
                mdp->trajectory_mdp->run = 0;
-           printf("current params are alpha, lambda: %f,%f\n", algs[0]->params.alpha_t, algs[0]->params.lambda_t);
+           printf("current params are alpha, lambda, sparse: %f,%f,%d\n", algs[0]->params.alpha_t, algs[0]->params.lambda_t,mdp->sparse);
 
             int z;
             for (z = 0; z < rvars->num_runs; z++) {
@@ -85,13 +85,13 @@ int run_exp(struct result_vars_t * rvars, struct mdp_t * mdp, const char *alg_na
 		  }
                   reset_mdp_and_transition_info(&tinfo, mdp);
                   
-                  int err_count = 0;
+		  int err_count = 0;
                   indices[STEP_IND] = err_count;
                   for (aa = 0; aa < rvars->num_algs; aa++)  {
                       indices[ALG_IND] = aa;
                       // err = get_rmse(algs[aa], mdp, work);
                       err = get_pame(algs[aa], mdp, work);
-		      //printf("the current err is %f\n", err);
+		      // printf("the current err is %f\n", err);
                       index = flatten_index(indices, rvars->array_sizes, NUM_COMBOS_RESULTS);
                       rvars->mean_mse[index] += err;
                       rvars->var_mse[index] += err*err;
@@ -321,8 +321,18 @@ double get_rmse(const struct alg_t * alg, const struct mdp_t * mdp, gsl_vector *
 double get_pame(const struct alg_t * alg, const struct mdp_t * mdp, gsl_vector * work) {
 
       double err = 0.0;
-    
-      alg->get_values(work, mdp->true_observations, alg->alg_vars);
+
+      if(mdp->sparse == SPARSE) {
+         struct matrix_alg_vars_t * vars = (struct matrix_alg_vars_t *) alg->alg_vars;
+         gsl_blas_dgespmv(mdp->true_observations, vars->w, work);
+      }
+      else alg->get_values(work, mdp->true_observations, alg->alg_vars);
+      //printf("the weight vec, work vec and true values are:: \n");
+      //struct matrix_alg_vars_t * vars = (struct matrix_alg_vars_t *) alg->alg_vars;
+      //gsl_vector_print(vars->w);
+      //gsl_vector_print(work);
+      //gsl_vector_print(mdp->true_values);
+      // gsl_matrix_print(mdp->true_observations);
 
       gsl_vector_div(work, mdp->true_values);
       

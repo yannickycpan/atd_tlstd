@@ -41,7 +41,8 @@ struct mdp_t {
       gsl_vector * error_weighting; // weights each error entry, e.g. dmu
       // Additional work values for error computation, of size numfeatures
       gsl_vector * work;
-      
+     
+      // NOTE: a nonstatic var's initial value is indeterminate, the behavior can be undefined; its value must be assigned later
       int sparse;
       // Functions to get features for a state
 };

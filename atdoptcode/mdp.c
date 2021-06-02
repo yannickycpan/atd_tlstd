@@ -12,7 +12,7 @@ void create_mdp(struct mdp_t * mdp, int type, struct input_file_info *file_info)
        * Check info in file to see if trajectory_mdp; if so, load trajectory_mdp info
        * Can only be one or the other; the below functions return NULL if of incorrect type
        */
-
+      mdp->sparse = NONSPARSE;
       // Define the functions required for each subclass
       if (type == 1) {
           //always pass in NULL, o.w. it does not work
@@ -28,7 +28,7 @@ void create_mdp(struct mdp_t * mdp, int type, struct input_file_info *file_info)
             mdp->true_observations = mdp->model_mdp->true_observations;
             mdp->true_values = mdp->model_mdp->vstar;
             mdp->error_weighting = mdp->model_mdp->dmu;
-            printf("make model successfully\n");
+            printf("--------------------make model mdp successfully\n");
       }
       else if (mdp->trajectory_mdp != NULL) {
             mdp->sparse = file_info->sparse;
@@ -37,6 +37,7 @@ void create_mdp(struct mdp_t * mdp, int type, struct input_file_info *file_info)
             mdp->true_values = mdp->trajectory_mdp->true_values;
             mdp->error_weighting = gsl_vector_alloc(mdp->true_values->size);
             gsl_vector_set_all(mdp->error_weighting, 1.0);
+            printf("--------------------make trajectory mdp successfully\n");
      }
 }
 
