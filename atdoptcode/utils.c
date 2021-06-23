@@ -147,6 +147,18 @@ int generate_random_uniform_matrix(gsl_matrix * mat, struct rgen_t * rgen, doubl
       return 0;
 }
 
+int generate_random_uniform_vector(gsl_vector * vec, double scale){
+      struct rgen_t * rgen = malloc(sizeof(struct rgen_t));
+      init_rgen(rgen, time(NULL));
+      double v;
+      for (int i=0; i<vec->size; i++) {
+          v =  uniform_random(rgen);
+          gsl_vector_set (vec, i, v*scale);
+      }
+      free_rgen(rgen);
+      return 0;
+}
+
 int generate_random_matrix(gsl_matrix * mat, const double sigma, double mean,struct rgen_t * rgen)
 {
   gsl_matrix_set_zero (mat);

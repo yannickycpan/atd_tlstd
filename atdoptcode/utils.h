@@ -62,6 +62,8 @@ int generate_random_indices(gsl_vector * v, const int n, struct rgen_t * rgen);
 
 int generate_random_uniform_matrix(gsl_matrix * mat, struct rgen_t * rgen, double min_v);
 
+int generate_random_uniform_vector(gsl_vector * vec, double scale);
+
 void init_rgen(struct rgen_t * rgen, const unsigned long int seed);
 
 // Assumes that the given probabilities are the cumulative sum
