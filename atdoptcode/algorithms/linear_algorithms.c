@@ -184,6 +184,158 @@ int TD_lambda(void * alg_vars, const struct alg_params_t * params, const struct 
       return 0;
 }
 
+int TD_Adam_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info){
+    struct linear_alg_vars_t * vars = (struct linear_alg_vars_t *) alg_vars;
+    double delta = compute_delta(vars->w, info);
+    vars->update_trace(vars->e, params, info);
+    
+    double beta1 = 0.9;
+    double beta2 = 0.999;
+    double epsilon = 0.000001;
+    
+    //if consider delta e as gradient
+    gsl_vector_set_zero(vars->work1);
+    gsl_blas_daxpy (delta, vars->e, vars->work1);
+    
+    //update first moment of trace
+    gsl_vector_scale(vars->mvec, beta1);
+    gsl_blas_daxpy (1.0 - beta1, vars->work1, vars->mvec);
+    //gsl_vector_scale(vars->mvec, 1.0/(1.0 - pow(beta1, vars->t + 1)));
+    
+    //update second moment of trace, compute square of trace
+    gsl_vector_scale(vars->vvec, beta2);
+    gsl_vector_memcpy(vars->work, vars->work1);
+    gsl_vector_mul (vars->work, vars->work1);
+    gsl_blas_daxpy (1.0 - beta2, vars->work, vars->vvec);
+    //gsl_vector_scale(vars->vvec, 1.0/(1.0 - pow(beta2, vars->t + 1)));
+    
+    //modify the above work1 to e to get the gradient without delta
+    
+    //compute the adam trace
+    gsl_vector_squareroot(vars->vvec, vars->work);
+    gsl_vector_add_constant(vars->work, epsilon);
+    gsl_vector_memcpy(vars->work1, vars->mvec);
+    gsl_vector_div (vars->work1, vars->work);
+    
+    //update weight vector
+    //gsl_blas_daxpy(params->alpha_t*delta, vars->work1, vars->w);
+    gsl_blas_daxpy(params->alpha_t, vars->work1, vars->w);
+    
+    //update time index
+    vars->t++;
+    //gsl_vector_print(vars->work);
+    //printf("time step is %d\n", vars->t);
+    return 0;
+}
+
+
+int TD_AMSGrad_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info){
+    struct linear_alg_vars_t * vars = (struct linear_alg_vars_t *) alg_vars;
+    double delta = compute_delta(vars->w, info);
+    vars->update_trace(vars->e, params, info);
+    
+    double beta1 = 0.9;
+    double beta2 = 0.999;
+    double epsilon = 0.000001;
+    
+    //if consider delta e as gradient
+    gsl_vector_set_zero(vars->work1);
+    gsl_blas_daxpy (delta, vars->e, vars->work1);
+    
+    //update first moment of trace
+    gsl_vector_scale(vars->mvec, beta1);
+    gsl_blas_daxpy (1.0 - beta1, vars->work1, vars->mvec);
+    //gsl_vector_scale(vars->mvec, 1.0/(1.0 - pow(beta1, vars->t + 1)));
+    
+    //update second moment of trace, compute square of trace
+    gsl_vector_scale(vars->vvec, beta2);
+    gsl_vector_memcpy(vars->work, vars->work1);
+    gsl_vector_mul (vars->work, vars->work1);
+    gsl_blas_daxpy (1.0 - beta2, vars->work, vars->vvec);
+    //gsl_vector_scale(vars->vvec, 1.0/(1.0 - pow(beta2, vars->t + 1)));
+    
+    //modify the above work1 to e to get the gradient without delta
+    
+    //take maximum between vvec and previous vvec which is h
+    gsl_vector_maximum(vars->h, vars->vvec);
+    gsl_vector_memcpy(vars->h, vars->vvec);
+    
+    //compute the adam trace
+    gsl_vector_squareroot(vars->vvec, vars->work);
+    gsl_vector_add_constant(vars->work, epsilon);
+    gsl_vector_memcpy(vars->work1, vars->mvec);
+    gsl_vector_div (vars->work1, vars->work);
+    
+    //update weight vector
+    //gsl_blas_daxpy(params->alpha_t*delta, vars->work1, vars->w);
+    gsl_blas_daxpy(params->alpha_t, vars->work1, vars->w);
+    
+    //update time index
+    vars->t++;
+    //gsl_vector_print(vars->work);
+    //printf("time step is %d\n", vars->t);
+    return 0;
+}
+
+int TD_AdaGrad_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info){
+    struct linear_alg_vars_t * vars = (struct linear_alg_vars_t *) alg_vars;
+    double delta = compute_delta(vars->w, info);
+    vars->update_trace(vars->e, params, info);
+    double epsilon = 0.000001;
+    
+    //if consider delta e as gradient
+    gsl_vector_set_zero(vars->work1);
+    gsl_blas_daxpy (delta, vars->e, vars->work1);
+    
+    gsl_vector_memcpy(vars->work, vars->work1);
+    gsl_vector_mul (vars->work, vars->work1);
+    gsl_vector_add(vars->h, vars->work);
+    
+    gsl_vector_squareroot(vars->h, vars->work);
+    gsl_vector_add_constant(vars->work, epsilon);
+    gsl_vector_div (vars->work1, vars->work);
+    
+    //update weight vector
+    //gsl_blas_daxpy(params->alpha_t*delta, vars->work1, vars->w);
+    gsl_blas_daxpy(params->alpha_t, vars->work1, vars->w);
+    
+    //update time index
+    vars->t++;
+    //printf("time step is %d\n", vars->t);
+    return 0;
+}
+
+int TD_RMSProp_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info){
+    struct linear_alg_vars_t * vars = (struct linear_alg_vars_t *) alg_vars;
+    double delta = compute_delta(vars->w, info);
+    vars->update_trace(vars->e, params, info);
+    double epsilon = 0.000001;
+    double beta = 0.9;
+    // params->exprate = 0.9;
+    
+    //if consider delta e as gradient
+    gsl_vector_set_zero(vars->work1);
+    gsl_blas_daxpy (delta, vars->e, vars->work1);
+    
+    gsl_vector_memcpy(vars->work, vars->work1);
+    gsl_vector_mul (vars->work, vars->work1);
+    
+    gsl_vector_scale(vars->h, beta);
+    gsl_blas_daxpy (1.0 - beta, vars->work, vars->h);
+    
+    gsl_vector_squareroot(vars->h, vars->work);
+    gsl_vector_add_constant(vars->work, epsilon);
+    gsl_vector_div (vars->work1, vars->work);
+    
+    //update weight vector
+    //gsl_blas_daxpy(params->alpha_t*delta, vars->work1, vars->w);
+    gsl_blas_daxpy(params->alpha_t, vars->work1, vars->w);
+    
+    //update time index
+    vars->t++;
+    //printf("time step is %d\n", vars->t);
+    return 0;
+}
 
 /* Store current value in VofS, because need that value for the next step */
 int TO_TD_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info) {

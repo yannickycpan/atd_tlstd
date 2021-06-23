@@ -23,6 +23,9 @@ struct linear_alg_vars_t {
     
       // For GTD and TO-GTD
       gsl_vector *h, *eh, *w_tm1;
+
+      // For Adam TD
+      gsl_vector *vvec, *mvec;
     
       // For some algorithms require additional working space, requires to init separately
       gsl_vector *work;
@@ -42,6 +45,14 @@ void deallocate_linear_alg(void * alg_vars);
 void reset_linear_alg(void * alg_vars);
 
 int TD_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info);
+
+int TD_Adam_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info);
+
+int TD_AdaGrad_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info);
+
+int TD_AMSGrad_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info);
+
+int TD_RMSProp_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info);
 
 int TO_TD_lambda(void * alg_vars, const struct alg_params_t * params, const struct transition_info_t * info);
 

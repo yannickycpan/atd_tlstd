@@ -58,6 +58,10 @@ const static struct{
       AlgDeallocateFcn deallocate_fcn;
 } algorithm_map [] = {
             { "TD", init_linear_alg, deallocate_linear_alg},
+            { "TD-Adam", init_linear_alg, deallocate_linear_alg},
+            { "TD-AdaGrad", init_linear_alg, deallocate_linear_alg},
+            { "TD-AMSGrad", init_linear_alg, deallocate_linear_alg},
+            { "TD-RMSProp", init_linear_alg, deallocate_linear_alg},
             { "TO-TD", init_linear_alg, deallocate_linear_alg},
             { "ETD", init_linear_alg, deallocate_linear_alg},
             { "TO-ETD", init_linear_alg, deallocate_linear_alg},
