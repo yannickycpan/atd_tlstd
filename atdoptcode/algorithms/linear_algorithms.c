@@ -17,6 +17,10 @@ const static struct{
       { "ETD", ETD, update_trace_replacing},
       { "TO-TD", TO_TD_lambda, update_trace_trueonline},
       { "TO-ETD", TO_ETD, update_trace_replacing},
+      { "TD-Adam", TD_Adam_lambda, update_trace_replacing},
+      { "TD-AdaGrad", TD_AdaGrad_lambda, update_trace_replacing},
+      { "TD-RMSProp", TD_RMSProp_lambda, update_trace_replacing},
+      { "TD-AMSGrad", TD_AMSGrad_lambda, update_trace_replacing},
 };
 const static int num_totalalgs = (sizeof(list_linear_algorithms) / sizeof(list_linear_algorithms[0]));
 
@@ -50,14 +54,41 @@ void init_linear_alg(struct alg_t * alg, const int numobservations){
       vars->w_tm1 = NULL;
       vars->work = NULL;
       vars->work1 = NULL;
+      vars->mvec = NULL;
+      vars->vvec = NULL;
       vars->t = 0;
       vars->VofS = 0; 
+
       /*
        * Algorithm specific initializations
        */
       if (strcmp(alg->name, "TO-ETD") == 0) {
          vars->work = gsl_vector_alloc(numfeatures);
          vars->I = 1;
+      }
+      else if(strcmp(alg->name, "TD-Adam") == 0){
+         vars->mvec = gsl_vector_alloc(numfeatures);
+         vars->vvec = gsl_vector_alloc(numfeatures);
+         vars->work = gsl_vector_alloc(numfeatures);
+         vars->work1 = gsl_vector_alloc(numfeatures);
+      }
+      else if(strcmp(alg->name, "TD-AdaGrad") == 0){
+        vars->h = gsl_vector_alloc(numfeatures);
+        vars->work = gsl_vector_alloc(numfeatures);
+        vars->work1 = gsl_vector_alloc(numfeatures);
+      }
+      else if(strcmp(alg->name, "TD-RMSProp") == 0){
+        vars->h = gsl_vector_alloc(numfeatures);
+        vars->work = gsl_vector_alloc(numfeatures);
+        vars->work1 = gsl_vector_alloc(numfeatures);
+      }
+      else if(strcmp(alg->name, "TD-AMSGrad") == 0){
+          vars->mvec = gsl_vector_alloc(numfeatures);
+          vars->vvec = gsl_vector_alloc(numfeatures);
+          //h here used as previous vvec
+          vars->h = gsl_vector_alloc(numfeatures);
+          vars->work = gsl_vector_alloc(numfeatures);
+          vars->work1 = gsl_vector_alloc(numfeatures);
       }
 }
 
@@ -66,7 +97,7 @@ void deallocate_linear_alg(void * alg_vars){
       
       gsl_vector_free(vars->w);
       gsl_vector_free(vars->e);
-   
+
       if (vars->work != NULL) {
          gsl_vector_free(vars->work);
       }
@@ -81,6 +112,12 @@ void deallocate_linear_alg(void * alg_vars){
       }
       if (vars->w_tm1 != NULL) {
          gsl_vector_free(vars->w_tm1);
+      }
+      if (vars->mvec != NULL) {
+         gsl_vector_free(vars->mvec);
+      }
+      if (vars->vvec != NULL) {
+         gsl_vector_free(vars->vvec);
       }
 
       free(vars);
@@ -113,6 +150,12 @@ void reset_linear_alg(void * alg_vars){
       }
       if (vars->work1 != NULL) {
          gsl_vector_set_zero(vars->work1);
+      }
+      if (vars->mvec != NULL) {
+         gsl_vector_set_zero(vars->mvec);
+      }
+      if (vars->vvec != NULL) {
+         gsl_vector_set_zero(vars->vvec);
       }
 }
 
